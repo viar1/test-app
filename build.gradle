@@ -1,0 +1,49 @@
+def RELEASE_REPOSITORY_URL  = "s3://repo.ebuilder.io/release/"
+def SNAPSHOT_REPOSITORY_URL = "s3://repo.ebuilder.io/snapshot/"
+
+buildscript {
+    repositories {
+        jcenter()
+        maven {
+            url "s3://repo.ebuilder.io/release/"
+            credentials(AwsCredentials) {
+                accessKey ACCESS_KEY_ID
+                secretKey SECRET_KEY_ID
+            }
+        }
+    }
+
+    dependencies {
+        classpath 'com.android.tools.build:gradle:2.3.3'
+        classpath "io.ebuilder.build.gradle:gradle-version-plugin:1.0.10"
+    }
+}
+
+allprojects {
+    repositories {
+        mavenLocal()
+        jcenter()
+        mavenCentral()
+        maven {
+            name "s3RepoInternal"
+            url RELEASE_REPOSITORY_URL
+            credentials(AwsCredentials) {
+                accessKey ACCESS_KEY_ID
+                secretKey SECRET_KEY_ID
+            }
+        }
+        maven {
+            name "s3RepoSnapshots"
+            url SNAPSHOT_REPOSITORY_URL
+            credentials(AwsCredentials) {
+                accessKey ACCESS_KEY_ID
+                secretKey SECRET_KEY_ID
+            }
+        }
+    }
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}
+
